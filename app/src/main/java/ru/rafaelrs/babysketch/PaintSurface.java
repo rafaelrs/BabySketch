@@ -174,11 +174,11 @@ public class PaintSurface extends SurfaceView implements SurfaceHolder.Callback 
             switch (mDrawType) {
                 case paint:
                     canvas.drawBitmap(mPenIcon, mLastPointX, mLastPointY - mPenIcon.getHeight(), null);
-                    canvas.drawCircle(mLastPointX, mLastPointY, 6f, paint);
+                    //canvas.drawCircle(mLastPointX, mLastPointY, 6f, paint);
                     break;
                 case eraser:
                     canvas.drawBitmap(mEraserIcon, mLastPointX, mLastPointY - mEraserIcon.getHeight(), null);
-                    canvas.drawCircle(mLastPointX, mLastPointY, 24f, paint);
+                    //canvas.drawCircle(mLastPointX, mLastPointY, 24f, paint);
                     break;
             }
         }
