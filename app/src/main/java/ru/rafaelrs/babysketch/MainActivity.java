@@ -30,6 +30,7 @@ public class MainActivity extends Activity {
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 
+        //Images for this activity taken from http://www.freeiconspng.com
         setContentView(R.layout.main_activity);
 
         initializeWidgets();
@@ -83,14 +84,13 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        //SystemMenubar.show();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        //SystemMenubar.show();
+        final PaintSurface paintArea = (PaintSurface) findViewById(R.id.paint_area);
+        paintArea.savePaint();
     }
 }

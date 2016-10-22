@@ -6,12 +6,17 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Created with Android Studio
@@ -71,9 +76,10 @@ public class PaintSurface extends SurfaceView implements SurfaceHolder.Callback 
     public void erasePaint() {
         mDrawingAreaContent = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
 
-        Paint signatureBg = new Paint(); signatureBg.setColor(Color.WHITE);
+        Paint drawingBackground = new Paint();
+        drawingBackground.setColor(Color.WHITE);
         Canvas c = new Canvas(mDrawingAreaContent);
-        c.drawRect(0, 0, getWidth(), getHeight(), signatureBg);
+        c.drawRect(0, 0, getWidth(), getHeight(), drawingBackground);
 
         invalidate();
     }
@@ -105,7 +111,7 @@ public class PaintSurface extends SurfaceView implements SurfaceHolder.Callback 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
         if (mDrawingAreaContent == null) {
-            erasePaint();
+            if (!loadPaint(width, height)) erasePaint();
         }
         Bitmap penOriginal = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.pen);
         mPenIcon = Bitmap.createScaledBitmap(penOriginal, height / 5, height / 5, true);
@@ -113,6 +119,39 @@ public class PaintSurface extends SurfaceView implements SurfaceHolder.Callback 
         mEraserIcon = Bitmap.createScaledBitmap(eraserOriginal, height / 5, height / 5, true);
 
     }
+
+    private boolean loadPaint(int width, int height) {
+        Log.i(this.getClass().getSimpleName(), "Try to restore image");
+        Bitmap loadedImage = BitmapFactory.decodeFile(new File(getContext().getFilesDir(), "current_image.png").getAbsolutePath());
+        if (loadedImage != null && loadedImage.getWidth() == width && loadedImage.getHeight() == height) {
+            mDrawingAreaContent = loadedImage.copy(Bitmap.Config.ARGB_8888, true);;
+            invalidate();
+
+            Log.i(this.getClass().getSimpleName(), "Loaded image " + mDrawingAreaContent.getWidth() + "x" + mDrawingAreaContent.getHeight());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void savePaint() {
+        try {
+            if (mDrawingAreaContent == null) return;
+
+            Log.i(this.getClass().getSimpleName(), "Saving image " + mDrawingAreaContent.getWidth() + "x" + mDrawingAreaContent.getHeight());
+            File outFile = new File(getContext().getFilesDir(), "current_image.png");
+            FileOutputStream fOut = new FileOutputStream(outFile);
+
+            mDrawingAreaContent.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+            fOut.flush();
+            fOut.close();
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void surfaceCreated(SurfaceHolder holder) {
     }
