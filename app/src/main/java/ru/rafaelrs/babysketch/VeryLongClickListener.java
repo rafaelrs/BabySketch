@@ -35,15 +35,16 @@ public abstract class VeryLongClickListener implements View.OnTouchListener {
                 @Override
                 public void run() {
                     long startTime = System.nanoTime();
+                    ToneGenerator toneGen = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
                     while (System.nanoTime() - startTime < longClickDuration && isLongPress) {
                         try {
                             Thread.sleep(500);
-                        } catch (InterruptedException e) {
+                        } catch (Exception e) {
                         }
 
-                        ToneGenerator toneGen = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
                         toneGen.startTone(ToneGenerator.TONE_CDMA_PIP, 100);
                     }
+                    toneGen.release();
 
                     if (isLongPress) {
                         Vibrator vibrator = (Vibrator) v.getContext().getSystemService(Context.VIBRATOR_SERVICE);
